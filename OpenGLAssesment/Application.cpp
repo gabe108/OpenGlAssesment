@@ -1,13 +1,20 @@
-#include "Application.h"
+#include"Application.h"
+#include"Shader.h"
+#include"Model.h"
+#include"filesystem.h"
+
+#include<iostream>
 
 Application::Application()
 {
-
+	m_fPrevTime = glfwGetTime();
+	m_fCurTime = 0;
+	m_fDeltaTime = 0;
 }
 
 Application::~Application()
 {
-
+	
 }
 
 bool Application::Startup(float _width, float _height, const char* _title)
@@ -37,15 +44,25 @@ bool Application::Startup(float _width, float _height, const char* _title)
 	}
 
 	aie::Gizmos::create(255U, 255U, 65535U, 65535U);
-	view = glm::lookAt(glm::vec3(20, 20, 20), glm::vec3(0), glm::vec3(0, 1, 0));
-	projection = glm::perspective(glm::pi<float>() * 0.25f,
+
+	m_cam = new FlyCamera(4.f, glm::vec3(0, 1, 0));
+	m_cam->setLookAt(glm::vec3(20, 20, 20), glm::vec3(0), glm::vec3(0,1,0));
+	m_cam->setPerspective(glm::pi<float>() * 0.25f,
 		16 / 9.f, 0.1f, 1000.f);
 
+	glfwSetInputMode(m_mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	m_shader = new Shader("./Shader/shader.vert", "./Shader/shader.frag");
+
+	ourModel = new Model(FileSystem::getPath("resources/nanosuit/nanosuit.obj"));
 	return true;
 }
 
 bool Application::Run()
 {
+	m_fCurTime = glfwGetTime();
+	m_fDeltaTime = m_fCurTime - m_fPrevTime;
+	m_fPrevTime = m_fCurTime;
+
 	if (glfwWindowShouldClose(m_mainWindow) == false &&
 		glfwGetKey(m_mainWindow, GLFW_KEY_ESCAPE) != GLFW_PRESS)
 	{
@@ -76,7 +93,20 @@ void Application::Draw()
 			i == 10 ? white : black);
 	}
 
-	aie::Gizmos::draw(projection * view);
+	m_cam->update(m_fDeltaTime);
+	aie::Gizmos::draw(m_cam->getProjectionViewTransform());
+
+	m_shader->use();
+
+	m_shader->setMat4("projection", m_cam->getProjectionTransform());
+	m_shader->setMat4("view", m_cam->getViewTransform());
+
+	// render the loaded model
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
+	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+	m_shader->setMat4("model", model);
+	ourModel->Draw(m_shader);
 
 	glfwSwapBuffers(m_mainWindow);
 	glfwPollEvents();

@@ -1,9 +1,12 @@
 #pragma once
 #include"gl_core_4_4.h"
 #include"Gizmos.h"
-#include<GLFW/glfw3.h>
+#include"FlyCamera.h"
 #include<glm/ext.hpp>
 #include<iostream>
+
+class Shader;
+class Model;
 
 class Application
 {
@@ -16,11 +19,13 @@ public:
 	void Draw();
 	void ExitApplication();
 
-	bool m_exit;
-	bool m_view = true;
 protected:
+	float m_fCurTime;
+	float m_fDeltaTime;
+	float m_fPrevTime;
+	Shader* m_shader;
 	GLFWwindow* m_mainWindow;
-	glm::mat4 view;
-	glm::mat4 projection;
+	FlyCamera* m_cam;
+	Model* ourModel;
 };
 
