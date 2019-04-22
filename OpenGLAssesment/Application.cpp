@@ -96,18 +96,27 @@ void Application::Draw()
 	m_cam->update(m_fDeltaTime);
 	aie::Gizmos::draw(m_cam->getProjectionViewTransform());
 
+	float lightX = 3.0f * sin(glfwGetTime());
+	float lightY = -0.3f;
+	float lightZ = 2.5f * cos(glfwGetTime());
+	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
+
 	m_shader->use();
 
 	m_shader->setMat4("projection", m_cam->getProjectionTransform());
 	m_shader->setMat4("view", m_cam->getViewTransform());
+	m_shader->setVec3("lightPos", lightPos);
+	m_shader->setVec3("viewPos", m_cam->getPos());
+	m_shader->setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+	m_shader->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
 	// render the loaded model
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
-	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
 	m_shader->setMat4("model", model);
 	ourModel->Draw(m_shader);
-
+	   
 	glfwSwapBuffers(m_mainWindow);
 	glfwPollEvents();
 }
