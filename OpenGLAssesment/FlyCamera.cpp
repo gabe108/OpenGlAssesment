@@ -5,7 +5,7 @@ FlyCamera::FlyCamera(float _speed, glm::vec3 _up)
 	m_fSpeed = _speed;
 	m_fNormalSpeed = _speed;
 	m_cameraUP = _up;
-	m_pos = glm::vec3(1);
+	m_pos = glm::vec3(20.0f, 0.0f, 20.0f);
 }
 
 FlyCamera::~FlyCamera()
@@ -49,6 +49,11 @@ void FlyCamera::update(float _dt)
 	if (!m_bFirstMouse)
 	{
 		setWorldTransform(glm::inverse(glm::lookAt(m_pos, m_pos + m_cameraFront, m_cameraUP)));
+		updateProjectionViewTransform();
+	}
+	else
+	{
+		setWorldTransform(glm::inverse(glm::lookAt(m_pos, glm::vec3(0), m_cameraUP)));
 		updateProjectionViewTransform();
 	}
 }

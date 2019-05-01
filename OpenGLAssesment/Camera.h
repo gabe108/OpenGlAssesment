@@ -11,19 +11,21 @@ public:
 		m_viewTransform = glm::mat4(1);
 		m_projectionTransform = glm::mat4(1);
 		m_projectionViewTransform = glm::mat4(1);
-		m_fLastX = 0; 
-		m_fLastY = 0;
+		m_fLastX = 1280.0f / 2.0;
+		m_fLastY = 720.0f / 2.0;
 		m_bFirstMouse = true;
 		m_cameraTarget = glm::vec3(0);
 		m_cameraDirection = glm::vec3(0);
 		m_cameraRight = glm::vec3(0);
 		m_cameraUP = glm::vec3(0);
 		m_cameraFront = glm::vec3(0);
-		m_sensitivity = 0.02f;
+		m_sensitivity = 0.1f;
 		m_fPitch = 0.f;
-		m_fYaw = 0.f;
+		m_fYaw = -90.f;
 		m_fXoffset = 0.f;
 		m_fYoffset = 0.f;
+		m_nwidth = 0.0f;
+		m_nheight = 0.0f;
 		
 		glfwSetWindowUserPointer(glfwGetCurrentContext(), this);
 		glfwSetCursorPosCallback(glfwGetCurrentContext(), mouse_callback);
@@ -38,6 +40,10 @@ public:
 	}
 	void setLookAt(glm::vec3 _from, glm::vec3 _to, glm::vec3 _up) 
 	{ 
+		glm::vec3 pos(0);
+		pos.x = m_worldTransform[3].x;
+		pos.y = m_worldTransform[3].y;
+		pos.z = m_worldTransform[3].z;
 		m_viewTransform = glm::lookAt(_from, _to, _up); 
 	}
 	void setPosition(glm::vec3 _pos){ m_worldTransform[3] = glm::vec4(_pos, 1);	}
@@ -70,6 +76,7 @@ public:
 		m_viewTransform = glm::inverse(m_worldTransform);
 		m_projectionViewTransform = m_projectionTransform * m_viewTransform;
 	}
+
 	static void mouse_callback(GLFWwindow* _main, double _xpos, double _ypos)
 	{
 		void *data = glfwGetWindowUserPointer(_main);
@@ -82,16 +89,6 @@ public:
 			c->m_bFirstMouse = false;
 		}
 
-		if (c->m_fLastX == 0, c->m_fLastY == 0)
-		{
-			//glfwGetWindowSize(_main, &(c->m_nwidth), &(c->m_nheight));
-
-			//c->m_fLastX = c->m_nwidth / 2;
-			//c->m_fLastY = c->m_nheight / 2;
-			c->m_fLastX = 640.f;
-			c->m_fLastY = 360.f;
-		}
-
 		c->m_fXoffset = _xpos - c->m_fLastX;
 		c->m_fYoffset = c->m_fLastY - _ypos;
 
@@ -101,8 +98,8 @@ public:
 		c->m_fXoffset *= c->m_sensitivity;
 		c->m_fYoffset *= c->m_sensitivity;
 
-		c->m_fPitch += c->m_fYoffset;
 		c->m_fYaw += c->m_fXoffset;
+		c->m_fPitch += c->m_fYoffset;
 
 		if (c->m_fPitch > 89.0f)
 			c->m_fPitch = 89.0f;
@@ -113,8 +110,7 @@ public:
 		front.x = cos(glm::radians(c->m_fYaw)) * cos(glm::radians(c->m_fPitch));
 		front.y = sin(glm::radians(c->m_fPitch));
 		front.z = sin(glm::radians(c->m_fYaw)) * cos(glm::radians(c->m_fPitch));
-		c->m_cameraFront = glm::normalize(front);/*
-		c->m_cameraRight = glm::normalize(glm::cross(c->m_cameraFront, c->m_cameraUP));*/
+		c->m_cameraFront = glm::normalize(front);
 	}
 
 protected:

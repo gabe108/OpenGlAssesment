@@ -1,6 +1,12 @@
 #include "Mesh.h"
 #include "Shader.h"
 
+/// <summary>
+/// Constructor to set member variables
+/// </summary>
+/// <param name="_vertices"> std::vector<Vertex> </param>
+/// <param name="_indices"> std::vector<unsigned int> </param>
+/// <param name="_textures"> std::vector<Texture> </param>
 Mesh::Mesh(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices, std::vector<Texture> _textures)
 {
 	this->vertices = _vertices;
@@ -14,6 +20,10 @@ Mesh::~Mesh()
 {
 }
 
+/// <summary>
+/// TO the draw the mesh itself
+/// </summary>
+/// <param name="_shader"> Shader* </param>
 void Mesh::Draw(Shader* _shader)
 {
 	unsigned int diffuseNr = 1;
@@ -40,6 +50,9 @@ void Mesh::Draw(Shader* _shader)
 	glBindVertexArray(0);
 }
 
+/// <summary>
+/// Setup the VAO, VBO and IBO by binding them and generating arrays
+/// </summary>
 void Mesh::setupMesh()
 {
 	glGenVertexArrays(1, &VAO);

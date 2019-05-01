@@ -10,16 +10,48 @@
 class Shader
 {
 public:
+	/// The public ID of the shader
 	unsigned int ID;
 
+	/// <summary>
+	/// Extracts shader code from the filepaths <paramref name="_vertexPath"/> and <paramref name="_fragmentPath"/> 
+	/// and call compileShader passing in the shader code.
+	/// </summary>
+	/// <returns>
+	/// Calls compileShader passing in the shader code
+	/// </returns>
+	/// <param name="_vertexPath"> const char* </param>
+	/// <param name="_fragmentPath"> const char* </param>
 	Shader(const char* _vertexPath, const char* _fragmentPath);
 	~Shader();
 
+	/// <summary>
+	/// Sets the current program to this shader
+	/// </summary>
 	void use();
+
+	/// <summary>
+	///  Gets the constant chars from the constructor 
+	///  and tries to compile them 
+	/// </summary>
+	/// <returns>
+	/// Calls the createProgram passing in the shader IDs
+	/// </returns>
+	/// <param name="_vcode"> const char* </param>
+	/// <param name="_fcode"> const char* </param>
 	void compileShader(const char* _vcode, const char* _fcode);
+
+	/// <summary>
+	///  Gets shader IDs from compileShader function <paramref name="vertex"/> and <paramref name="fragment"/> 
+	///  and creates the shader program
+	/// </summary>
+	/// <param name="vertex"> unsigned int </param>
+	/// <param name="fragment"> unsigned int </param>
 	void createProgram(unsigned int vertex, unsigned int fragment);
 
-
+	/// <summary>
+	///  All of the following functions are to set uniform variables
+	/// </summary>
 	void setBool(const std::string& name, bool value) const
 	{
 		glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
